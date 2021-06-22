@@ -1,12 +1,15 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
 #include "main.h"
+#include "SqQueue.h"
 
 #define MVNum 100
 
 typedef char VerTexType;
 typedef int ArcType;
 typedef int OtherInfo;
+
+static int visited[MVNum] = { 0 };
 
 typedef struct ArcNode {
 	ArcType adjvex;
@@ -27,11 +30,15 @@ typedef struct {
 Status CreateUDG(ALGraph* G);
 int LocateVertex(ALGraph G, VerTexType v);
 void PrintGraph(ALGraph G);
+void BFS(ALGraph G, VerTexType vertex);
 
 void main() {
 	ALGraph G;
 	CreateUDG(&G);
 	PrintGraph(G);
+	printf("广度遍历：");
+	BFS(G, G.vertex[0].data);
+	printf("\n");
 }
 
 Status CreateUDG(ALGraph* G) {
@@ -93,5 +100,30 @@ void PrintGraph(ALGraph G) {
 			p = p->nextarc;
 		}
 		printf("\n");
+	}
+}
+
+void BFS(ALGraph G, VerTexType vertex) {
+	VerTexType v_temp;
+	ArcNode* p;
+	SqQueue Q;
+	InitQueue(&Q);
+	printf("%c ", vertex);
+	visited[LocateVertex(G, vertex)] = 1;
+	EnQueue(&Q, vertex);
+	while (Q.rear != Q.front)
+	{
+		DeQueue(&Q, &v_temp);
+		p = G.vertex[LocateVertex(G, v_temp)].firstarc;
+		while (p != NULL)
+		{
+			if (visited[p->adjvex] == 0)
+			{
+				printf("%c ", G.vertex[p->adjvex].data);
+				visited[p->adjvex] = 1;
+				EnQueue(&Q, G.vertex[p->adjvex].data);
+			}
+			p = p->nextarc;
+		}
 	}
 }
